@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Image } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from "../services/api"
 
 interface LoginProps {
   navigation: any;
@@ -9,18 +11,39 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [senha, setSenha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    console.log('Login realizado com sucesso');
-    navigation.navigate('Home');
-  };
+
+  const handleLogin = async () => {
+    if(!email || !senha) {
+      alert("Preencha todos os campos!");
+      return
+    }
+
+    try {
+
+      const response = await api.post('api/user/login', { email, senha });
+      console.log(email, senha);
+      
+      setLoading(false);
+      console.log('Login realizado:', response);
+      navigation.navigate('Perfil'); // Navegue para a próxima tela, como "Perfil"
+
+    } catch (error: any) {
+      setLoading(false);
+      console.error('Erro no login:', error.response?.data || error.message);
+    }
+    
+  }
+
 
   const handleCreateAccount = () => {
     console.log('Criar conta');
-    navigation.navigate('CreateAccount'); // Substitua com a rota de criação de conta
-  };
+    navigation.navigate('Cadastro');
+  }
+
 
   return (
     <Container>
@@ -29,18 +52,10 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         <LogoImage source={require('../../src/assets/topBarber.png')} />
       </LogoWrapper>
 
-      {/* Navegação de Login e Cadastro */}
-      <NavWrapper>
-        <NavButton onPress={handleLogin}>
-          <NavText>Entrar</NavText>
-        </NavButton>
-        <NavButton onPress={handleCreateAccount}>
-          <NavText>Criar Conta</NavText>
-        </NavButton>
-      </NavWrapper>
 
       {/* Titulo */}
       <Title>Bem-vindo!</Title>
+
 
       {/* Inputs */}
       <InputWrapper>
@@ -49,8 +64,8 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
         <PasswordContainer>
           <PasswordInput
             placeholder="Senha"
-            value={password}
-            onChangeText={setPassword}
+            value={senha}
+            onChangeText={setSenha}
             secureTextEntry={!showPassword}
           />
           <EyeButton onPress={() => setShowPassword(!showPassword)}>
@@ -68,6 +83,11 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
           <ButtonText>Entrar</ButtonText>
         </LoginButton>
 
+        {/* Botão de Cadastro */}
+        <SignInButton onPress={handleCreateAccount}>
+          <ButtonText>Criar conta</ButtonText>
+        </SignInButton>
+
       </InputWrapper>
     </Container>
   );
@@ -80,6 +100,7 @@ const Container = styled(View)`
   justify-content: space-around;
   align-items: center;
   background-color: #fff;
+
 `;
 
 const LogoWrapper = styled(View)`
@@ -87,38 +108,15 @@ const LogoWrapper = styled(View)`
 `;
 
 const LogoImage = styled(Image)`
-  width: 500px;
-  height: 150px;
+  width: 300px;
+  height: 300px;
+  margin-bottom: -50px;
 `;
 
 const Title = styled(Text)`
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
   color: #414141;
-`;
-
-const NavWrapper = styled(View)`
-  background-color: #898970;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 40px;
-`;
-
-const NavButton = styled(TouchableOpacity)`
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  margin: 0 5px;
-  justify-content: center;
-  align-items: center;
-`;
-
-const NavText = styled(Text)`
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
 `;
 
 const InputWrapper = styled(View)`
@@ -170,6 +168,15 @@ const ForgotText = styled(Text)`
 `;
 
 const LoginButton = styled(TouchableOpacity)`
+  background-color: #80382b;
+  padding: 15px;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+`;
+
+const SignInButton = styled(TouchableOpacity)`
   background-color: #80382b;
   padding: 15px;
   border-radius: 8px;

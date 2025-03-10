@@ -1,15 +1,16 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-import PerfilScreen from '../screens/PerfilScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import CadastroScreen from '../screens/CadastroScreen';
 import LoginScreen from '../screens/LoginScreen';
 
-const Stack = createStackNavigator();
+const Stack = createNativeStackNavigator();
 
-export default function AppNavigator() {
+function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Login">
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Perfil" component={PerfilScreen} />
+      <Stack.Screen name="Cadastro" component={CadastroScreen} />
     </Stack.Navigator>
   );
 }
+
+export default AppNavigator;

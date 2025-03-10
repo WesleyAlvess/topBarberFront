@@ -1,7 +1,6 @@
 import React from 'react';
-import AppNavigator from '../navigation/AppNavigator';
-import Login from "../screens/LoginScreen"
+import AppNavigator from '../navigation/AppNavigator'; // Corrigindo o caminho de importação
 
 export default function App() {
-  return <Login />;
+  return <AppNavigator />;
 }
