@@ -1,87 +1,186 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, Image } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Image } from 'react-native';
 import styled from 'styled-components/native';
+import Icon from 'react-native-vector-icons/Feather';
 
-// Declarando um tipo para as propriedades do componente
 interface LoginProps {
-  navigation: any; // Tipo para a navegação
+  navigation: any;
 }
 
 const Login: React.FC<LoginProps> = ({ navigation }) => {
-  // Tipando useState com string para as variáveis de email e senha
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Função que será chamada quando o botão login for clicado
   const handleLogin = () => {
     console.log('Login realizado com sucesso');
-    navigation.navigate('Home'); // Navega para a tela Home após login
+    navigation.navigate('Home');
+  };
+
+  const handleCreateAccount = () => {
+    console.log('Criar conta');
+    navigation.navigate('CreateAccount'); // Substitua com a rota de criação de conta
   };
 
   return (
     <Container>
-       {/* Imagem em cima da logo */}
+      {/* Logo */}
       <LogoWrapper>
-        <LogoImage source={require('../assets/logo.png')} />
+        <LogoImage source={require('../../src/assets/topBarber.png')} />
       </LogoWrapper>
-      <Input
-        placeholder="Email"
-        onChangeText={setEmail}
-      />
 
-      <Input
-        placeholder="Senha"
-        secureTextEntry
-        onChangeText={setPassword}
-      />
+      {/* Navegação de Login e Cadastro */}
+      <NavWrapper>
+        <NavButton onPress={handleLogin}>
+          <NavText>Entrar</NavText>
+        </NavButton>
+        <NavButton onPress={handleCreateAccount}>
+          <NavText>Criar Conta</NavText>
+        </NavButton>
+      </NavWrapper>
 
-      <LoginButton onPress={handleLogin}>
-        <ButtonText>Entrar</ButtonText>
-      </LoginButton>
+      {/* Titulo */}
+      <Title>Bem-vindo!</Title>
+
+      {/* Inputs */}
+      <InputWrapper>
+        <Input placeholder="Email" value={email} onChangeText={setEmail} />
+
+        <PasswordContainer>
+          <PasswordInput
+            placeholder="Senha"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <EyeButton onPress={() => setShowPassword(!showPassword)}>
+            <Icon name={showPassword ? 'eye' : 'eye-off'} size={20} color="#797979" />
+          </EyeButton>
+        </PasswordContainer>
+
+        {/* Esqueceu a senha */}
+        <ForgotPassword onPress={() => navigation.navigate('ForgotPassword')}>
+          <ForgotText>Esqueceu sua senha?</ForgotText>
+        </ForgotPassword>
+
+        {/* Botão de Login */}
+        <LoginButton onPress={handleLogin}>
+          <ButtonText>Entrar</ButtonText>
+        </LoginButton>
+
+      </InputWrapper>
     </Container>
   );
 };
 
 export default Login;
 
-// Estilos da tela de login
 const Container = styled(View)`
   flex: 1;
-  justify-content: center;
-  padding: 25px;
-  background-color: #e4e4e4;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #fff;
 `;
 
 const LogoWrapper = styled(View)`
   align-items: center;
-  margin-bottom: 20px;
 `;
 
 const LogoImage = styled(Image)`
-  width: 100px;  // Defina o tamanho desejado para a logo
-  height: 100px; // Defina o tamanho desejado para a logo
-  margin-bottom: 15px;  // Distância entre a logo e os inputs
+  width: 500px;
+  height: 150px;
+`;
+
+const Title = styled(Text)`
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #414141;
+`;
+
+const NavWrapper = styled(View)`
+  background-color: #898970;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 40px;
+`;
+
+const NavButton = styled(TouchableOpacity)`
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 0 5px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const NavText = styled(Text)`
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+const InputWrapper = styled(View)`
+  flex: 1;
+  width: 100%;
+  max-width: 350px;
 `;
 
 const Input = styled(TextInput)`
-  height: 40px;
-  border-bottom-width: 1px;
-  border-bottom-color: #797979;
-  margin-bottom: 12px;
-  padding-left: 8px;
+  width: 100%;
+  height: 45px;
+  border-width: 1px;
+  border-color: #ccc;
+  border-radius: 8px;
+  padding-left: 10px;
+  margin-bottom: 20px;
+  background-color: white;
 `;
 
-const LoginButton = styled.TouchableOpacity`
-  background-color: #80382B;
+const PasswordContainer = styled(View)`
+  width: 100%;
+  height: 45px;
+  flex-direction: row;
+  align-items: center;
+  border-width: 1px;
+  border-color: #ccc;
+  border-radius: 8px;
+  padding-left: 10px;
+  background-color: white;
+`;
+
+const PasswordInput = styled(TextInput)`
+  flex: 1;
+  height: 100%;
+`;
+
+const EyeButton = styled(TouchableOpacity)`
   padding: 10px;
-  border-radius: 5px;
+`;
+
+const ForgotPassword = styled(TouchableOpacity)`
+  align-self: flex-end;
+  margin-bottom: 20px;
+`;
+
+const ForgotText = styled(Text)`
+  margin-top: 10px;
+  color: #80382b;
+`;
+
+const LoginButton = styled(TouchableOpacity)`
+  background-color: #80382b;
+  padding: 15px;
+  border-radius: 8px;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 15px;
 `;
+
 
 const ButtonText = styled(Text)`
   color: white;
   font-size: 16px;
+  font-weight: bold;
 `;
-
