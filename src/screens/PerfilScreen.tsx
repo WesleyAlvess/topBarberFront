@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
-import styled from 'styled-components/native';
+import React, { useState } from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import styled from "styled-components/native";
 
 const ProfileScreen: React.FC = () => {
   const [userData, setUserData] = useState({
-    nome: 'Wesley Alves Pereira',
-    email: 'walvespereira96@gmail.com',
-    telefone: '19984246161',
-    foto: 'https://www.gravatar.com/avatar/',
-    tipo: 'comum',
+    nome: "Wesley Alves Pereira",
+    email: "walvespereira96@gmail.com",
+    telefone: "19984246161",
+    foto: "https://avatars.githubusercontent.com/u/110751484?v=4",
+    tipo: "user",
   });
 
   return (
     <Container>
       {/* Foto de Perfil */}
       <ContainerPerfil>
-        <Text>Perfil</Text>
+        <TextTitulo>Perfil</TextTitulo>
         <ProfileImage source={{ uri: userData.foto }} />
+
+        {/* Dados Pessoais */}
+        <UserInfo>
+          <TextInfo>Olá {userData.nome}</TextInfo>
+          <TextInfo>Email: {userData.email}</TextInfo>
+          <TextInfo>Telefone: {userData.telefone}</TextInfo>
+        </UserInfo>
       </ContainerPerfil>
-      
-      {/* Dados Pessoais */}
-      <UserInfo>
-        <TextInfo>{userData.nome}</TextInfo>
-        <TextInfo>{userData.email}</TextInfo>
-        <TextInfo>{userData.telefone}</TextInfo>
-      </UserInfo>
 
       {/* Tipo de Usuário */}
       <ProfileType>
@@ -33,17 +33,17 @@ const ProfileScreen: React.FC = () => {
 
       {/* Botões de Navegação */}
       <ButtonWrapper>
-        <ActionButton onPress={() => console.log('Procurar Salão')}>
+        <ActionButton onPress={() => console.log("Procurar Salão")}>
           <ButtonText>Procurar Salão</ButtonText>
         </ActionButton>
 
-        {userData.tipo === 'comum' && (
-          <ActionButton onPress={() => console.log('Criar Salão')}>
+        {userData.tipo === "comum" && (
+          <ActionButton onPress={() => console.log("Criar Salão")}>
             <ButtonText>Criar um Salão</ButtonText>
           </ActionButton>
         )}
 
-        <ActionButton onPress={() => console.log('Editar Perfil')}>
+        <ActionButton onPress={() => console.log("Editar Perfil")}>
           <ButtonText>Editar Perfil</ButtonText>
         </ActionButton>
       </ButtonWrapper>
@@ -62,6 +62,11 @@ const Container = styled(View)`
   background-color: #fff;
 `;
 
+const TextTitulo = styled(Text)`
+  font-size: 22px;
+  padding: 10px;
+`;
+
 const ContainerPerfil = styled(View)`
   position: absolute;
   top: 0;
@@ -69,23 +74,27 @@ const ContainerPerfil = styled(View)`
   align-items: center;
   justify-content: center;
   width: 100%;
-  background-color: #afafaf;
-  `
+`;
 
 const ProfileImage = styled(Image)`
   width: 150px;
   height: 150px;
+  border-radius: 90px;
+  border: 6px solid #414141;
 `;
 
 const UserInfo = styled(View)`
   margin-bottom: 30px;
   align-items: center;
+  background-color: #414141;
 `;
 
 const TextInfo = styled(Text)`
+  width: 300px;
   font-size: 18px;
-  margin: 5px 0;
-  color: #414141;
+  background-color: #414141;
+  color: #fff;
+  padding: 5px;
 `;
 
 const ProfileType = styled(View)`
