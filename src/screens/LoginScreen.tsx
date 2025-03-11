@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Image } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from "../services/api"
+import {login} from '../functions/login'
 
 interface LoginProps {
   navigation: any;
@@ -14,29 +14,17 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [senha, setSenha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false)
+  const [data, setData] = useState([])
 
-
-  const handleLogin = async () => {
-    if(!email || !senha) {
-      alert("Preencha todos os campos!");
-      return
-    }
-
-    try {
-
-      const response = await api.post('api/user/login', { email, senha });
-      console.log(email, senha);
-      
-      setLoading(false);
-      console.log('Login realizado:', response);
-      navigation.navigate('Perfil'); // Navegue para a próxima tela, como "Perfil"
-
-    } catch (error: any) {
-      setLoading(false);
-      console.error('Erro no login:', error.response?.data || error.message);
-    }
+  const handleLogin = () => {
+    login(email, senha, setData, setLoading, setError);
+  };
+  
+  useEffect(() => {
+    console.log(data);
     
-  }
+  }, [data])
 
 
   const handleCreateAccount = () => {
