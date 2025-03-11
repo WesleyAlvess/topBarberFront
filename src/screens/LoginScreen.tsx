@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, TouchableOpacity, Image } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {login} from '../functions/login'
+import { login } from '../functions/login'
 
 interface LoginProps {
   navigation: any;
@@ -15,16 +14,35 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false)
-  const [data, setData] = useState([])
+  const [data, setData] = useState<any>([])
 
-  const handleLogin = () => {
-    login(email, senha, setData, setLoading, setError);
+  // Função chamada ao clicar no botão de login
+  const handleLogin = async () => {
+    setLoading(true) // Ativa o carregamento
+
+    // Chama a função login passando email e senha
+    const userData = await login(email, senha)
+
+    if(userData) {
+      navigation.navigate("Perfil"); // Redireciona o usuário
+    } else {
+      alert("Email ou senha incorretos") // Exibe mensagem de erro
+    }
+
+    setLoading(false); // Desativa o carregamento
+    try {
+    } catch (error) {
+      console.error("Erro ao acessar os dados");
+    }
   };
   
   useEffect(() => {
+    if(data && data.token) {
+      navigation.navigate('Perfil');
+    }
     console.log(data);
     
-  }, [data])
+  }, [])
 
 
   const handleCreateAccount = () => {
