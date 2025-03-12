@@ -1,52 +1,52 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, Button } from "react-native";
 import styled from "styled-components/native";
+import { getPerfil } from "../functions/getPerfil";
+import Icon from 'react-native-vector-icons/FontAwesome'; // Importando a biblioteca de ícones
+
 
 const ProfileScreen: React.FC = () => {
-  const [userData, setUserData] = useState({
-    nome: "Wesley Alves Pereira",
-    email: "walvespereira96@gmail.com",
-    telefone: "19984246161",
-    foto: "https://avatars.githubusercontent.com/u/110751484?v=4",
-    tipo: "user",
-  });
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const buscaUserData = async () => {
+      const data = await getPerfil() // Busca dados do perfil
+      if(data) setUserData(data) // Atualiza o estado se os dados existirem
+      setLoading(false) // Marca o fim do carregamento
+    };
+    buscaUserData() // Chama a função quando a tela for renderizada
+  }, []);
+
+  if(loading) {
+    <Container>
+      <ActivityIndicator size="large" color="#737373" />
+    </Container>
+  }
+
 
   return (
     <Container>
-      {/* Foto de Perfil */}
-      <ContainerPerfil>
-        <TextTitulo>Perfil</TextTitulo>
-        <ProfileImage source={{ uri: userData.foto }} />
-
-        {/* Dados Pessoais */}
-        <UserInfo>
-          <TextInfo>Olá {userData.nome}</TextInfo>
-          <TextInfo>Email: {userData.email}</TextInfo>
-          <TextInfo>Telefone: {userData.telefone}</TextInfo>
-        </UserInfo>
-      </ContainerPerfil>
-
-      {/* Tipo de Usuário */}
-      <ProfileType>
-        <Text>{`Perfil: ${userData.tipo}`}</Text>
-      </ProfileType>
-
-      {/* Botões de Navegação */}
-      <ButtonWrapper>
-        <ActionButton onPress={() => console.log("Procurar Salão")}>
-          <ButtonText>Procurar Salão</ButtonText>
-        </ActionButton>
-
-        {userData.tipo === "comum" && (
-          <ActionButton onPress={() => console.log("Criar Salão")}>
-            <ButtonText>Criar um Salão</ButtonText>
-          </ActionButton>
-        )}
-
-        <ActionButton onPress={() => console.log("Editar Perfil")}>
-          <ButtonText>Editar Perfil</ButtonText>
-        </ActionButton>
-      </ButtonWrapper>
+      {userData ? (
+        <ContainerBox>
+          <ContainerPerfil>
+            <ProfileImage source={ require('../../src/assets/picofme.png') } />
+            <ContainerText>
+              <TextName>{userData.nome}</TextName>
+              <TextTipo>Seu perfil é {userData.tipo}</TextTipo>
+                <TextFone>
+                  <Icon name="phone" size={14} color="gary" /> {/* Ícone de telefone */}
+                  {userData.telefone}
+                </TextFone>
+            </ContainerText>
+          </ContainerPerfil>
+          <ContainerBotoes>
+            <TextButton>Enviar</TextButton>
+          </ContainerBotoes>
+        </ContainerBox>
+      ) : (
+        <Text>Erro ao carregar perfil</Text>
+      )}
     </Container>
   );
 };
@@ -58,67 +58,67 @@ export default ProfileScreen;
 const Container = styled(View)`
   flex: 1;
   align-items: center;
-  justify-content: center;
   background-color: #fff;
 `;
 
-const TextTitulo = styled(Text)`
-  font-size: 22px;
-  padding: 10px;
+const ContainerBox = styled(View)`
+  justify-content: center;
 `;
 
 const ContainerPerfil = styled(View)`
-  position: absolute;
-  top: 0;
-  left: 0;
+  padding: 15px;
+  width: 100%;
+  height: 180px;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  gap: 22px;
 `;
 
 const ProfileImage = styled(Image)`
-  width: 150px;
-  height: 150px;
-  border-radius: 90px;
-  border: 6px solid #414141;
+  width: 100px;
+  height: 100px;
 `;
 
-const UserInfo = styled(View)`
-  margin-bottom: 30px;
-  align-items: center;
-  background-color: #414141;
+const ContainerText = styled(View)`
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 10px;
 `;
 
-const TextInfo = styled(Text)`
-  width: 300px;
-  font-size: 18px;
-  background-color: #414141;
-  color: #fff;
-  padding: 5px;
+const TextName = styled(Text)`
+  font-size: 22px;
 `;
 
-const ProfileType = styled(View)`
-  margin-bottom: 20px;
-  align-items: center;
+const TextTipo = styled(Text)`
+  font-style: italic;
+  color: gray;
 `;
 
-const ButtonWrapper = styled(View)`
-  width: 100%;
-  align-items: center;
-`;
+const TextFone = styled(Text)`  
+  font-style: italic;
+  color: gray;
+  `;
 
-const ActionButton = styled(TouchableOpacity)`
+
+const ContainerBotoes = styled(TouchableOpacity)`
   background-color: #80382b;
   padding: 15px;
-  width: 250px;
+  width: 200px;
   margin-bottom: 15px;
-  border-radius: 8px;
+  border-radius: 10px;
   justify-content: center;
   align-items: center;
-`;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  `;
 
-const ButtonText = styled(Text)`
-  color: white;
-  font-size: 16px;
+const TextButton = styled(Text)`
+  color: #fff;
   font-weight: bold;
-`;
+  font-size: 18px;
+`
+
+
+
+
+// walvespereira96@gmail.com

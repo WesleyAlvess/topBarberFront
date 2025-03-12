@@ -1,13 +1,6 @@
 import api from "../services/api"; // Importa a instância do Axios
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Para armazenar os dados localmente
 
-/**
- * Função para autenticar o usuário via API
- * @param {string} email - Email do usuário
- * @param {string} senha - Senha do usuário
- * @returns {object | null} Retorna os dados do usuário em caso de sucesso ou null em caso de erro
- */
-
 export const login = async (email: string, senha: string) => {
   try {
     // Envia a requisição para a API com email e senha
