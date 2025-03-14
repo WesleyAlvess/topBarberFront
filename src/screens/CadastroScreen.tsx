@@ -2,34 +2,45 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Image } from 'react-native';
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/Feather';
+import { createNewUser } from '../functions/createNewUser';
 
 interface CreateAccountProps {
   navigation: any;
 }
 
 const Cadastro: React.FC<CreateAccountProps> = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [senha, setSenha] = useState<string>('');
+  const [telefone, setTelefone] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [userData, setUserData] = useState<any>(null) // Armazenando dados do novo usuário
 
-  const handleSignUp = () => {
-    if (password !== confirmPassword) {
-      console.log('As senhas não coincidem!');
-      return;
+  const handleSignUp = async () => {
+    setLoading(true);
+    try {
+      const data = await createNewUser(name, email, senha, telefone);
+
+      // Atualize o estado do usuário (se necessário)
+      setUserData(data);
+
+      // Use os dados diretamente sem depender de userData
+      if (data && data._id) {
+        navigation.navigate("Perfil", { data }); // Redireciona o usuário com os dados
+      } else {
+        alert("Erro ao criar conta. Tente novamente.");
+      }
+    } catch (error: any) {
+      console.error("Erro na criação do usuário:", error);
+      alert("Erro ao criar conta. Verifique seus dados e tente novamente.");
+    } finally {
+      setLoading(false);
     }
-    console.log('Cadastro realizado com sucesso');
-    navigation.navigate('Home');
   };
 
   return (
     <Container>
-      {/* Botão de Voltar */}
-      <BackButton onPress={() => navigation.goBack()}>
-        <Icon name="arrow-left" size={24} color="#fff" />
-      </BackButton>
       {/* Logo */}
       <LogoWrapper>
         <LogoImage source={require('../../src/assets/topBarber.png')} />
@@ -41,14 +52,17 @@ const Cadastro: React.FC<CreateAccountProps> = ({ navigation }) => {
       <InputWrapper>
         <Input placeholder="Nome" value={name} onChangeText={setName} />
         <Input placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
+        <Input placeholder="Telefone" value={telefone} onChangeText={setTelefone} />
 
         <PasswordContainer>
           <PasswordInput
             placeholder="Senha"
-            value={password}
-            onChangeText={setPassword}
+            value={senha}
+            onChangeText={setSenha}
             secureTextEntry={!showPassword}
           />
+
+
           <EyeButton onPress={() => setShowPassword(!showPassword)}>
             <Icon name={showPassword ? 'eye' : 'eye-off'} size={20} color="#797979" />
           </EyeButton>
@@ -76,17 +90,6 @@ const Container = styled(View)`
   justify-content: space-between;
   align-items: center;
   background-color: #fff;
-`;
-
-const BackButton = styled(TouchableOpacity)`
-  position: absolute;
-  top: 40px;
-  left: 20px;
-  z-index: 1;
-  background-color: #80382b;
-  color: #fff;
-  border-radius: 50%;
-
 `;
 
 const LogoWrapper = styled(View)`

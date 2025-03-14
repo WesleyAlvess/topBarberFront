@@ -6,7 +6,7 @@ export const login = async (email: string, senha: string) => {
     // Envia a requisição para a API com email e senha
     const response = await api.post("/api/user/login", { email, senha });
 
-    // Login bem sucediso, armazeno o token e os dados do usuario no
+    // Login bem sussedido, armazeno o token e os dados do usuario no
     if (response.data?.token) {
       await AsyncStorage.setItem("userToken", response.data.token);
       await AsyncStorage.setItem("userData", JSON.stringify(response.data));

@@ -1,26 +1,63 @@
-import api from "../services/api"; // Importa a instância do Axios
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Para armazenar os dados localmente
+import api from "../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const getPerfil = async () => {
+// Definição do tipo para o perfil do usuário
+interface UserProfile {
+  _id: string;
+  nome: string;
+  email: string;
+  foto: string;
+  status: string;
+  telefone: string;
+  tipo: string;
+  dataCadastro: string;
+}
+
+// Função para obter o perfil do usuário autenticado
+export const getPerfil = async (): Promise<UserProfile | null> => {
   try {
-    // Recupera o token do AsyncStorage
-    const token = await AsyncStorage.getItem("userToken");
+    // 🔹 Recupera o token salvo localmente
+    let token = await AsyncStorage.getItem("userToken");
 
-    // Se não houver token, significa que o usuário não está autenticado
     if (!token) {
-      console.warn("Token não encontrado, usuário não autenticado.");
-      return null; // Interrompe a função retornando null
+      console.warn("⚠️ Token não encontrado, usuário não autenticado.");
+      return null;
     }
 
-    // Faz a requisição GET para obter os dados do perfil do usuário
-    const response = await api.get("/api/user/perfil", {
-      headers: { Authorization: `Bearer ${token}`} // Envia o token no cabeçalho da requisição
-    })
+    // 🔹 Requisição para obter os dados do perfil
+    const response = await api.get<UserProfile>("/api/user/perfil", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-    return response.data; // Retorna os dados do perfil do usuário
+    if (response.status === 200) {
+      const perfilAtual = response.data;
 
-  } catch (error) {
-    console.error("Erro ao obter dados do Perfil!", error);
+      // 🔹 Atualiza o AsyncStorage com o perfil atual
+      await AsyncStorage.setItem("userProfile", JSON.stringify(perfilAtual));
+
+      return perfilAtual;
+    }
+
+    console.error("❌ Erro ao obter dados do perfil:", response.status);
+    return null;
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      console.warn("⚠️ Token inválido ou expirado! Tentando atualizar...");
+
+      // 🔄 Tentativa de renovar o token
+      const novoToken = await refreshToken();
+      if (novoToken) {
+        console.log("✅ Novo token obtido:", novoToken);
+        await AsyncStorage.setItem("userToken", novoToken);
+        return getPerfil(); // 🔄 Tenta novamente com o novo token
+      } else {
+        console.error("❌ Não foi possível renovar o token.");
+      }
+    }
+
+    console.error("❌ Erro ao obter dados do perfil:", error);
     return null;
   }
 };
+
+

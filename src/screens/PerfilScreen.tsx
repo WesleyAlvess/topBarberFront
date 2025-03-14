@@ -13,15 +13,20 @@ const ProfileScreen: React.FC = () => {
     const buscaUserData = async () => {
       const data = await getPerfil() // Busca dados do perfil
       if (data) setUserData(data) // Atualiza o estado se os dados existirem
+      console.log("Dados do perfil recebidos:", data);
+
+      setUserData(data); // Atualiza o estado com os dados recebidos
       setLoading(false) // Marca o fim do carregamento
     };
     buscaUserData() // Chama a função quando a tela for renderizada
   }, []);
 
   if (loading) {
-    <Container>
-      <ActivityIndicator size="large" color="#737373" />
-    </Container>
+    return (
+      <Container>
+        <ActivityIndicator size="large" color="#737373" />
+      </Container>
+    )
   }
 
 
